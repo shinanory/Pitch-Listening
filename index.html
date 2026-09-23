@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Pitch Training</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "spessasynth_lib": "./js/vendor/spessasynth/lib/index.js",
+      "spessasynth_core": "./js/vendor/spessasynth/core/index.js",
+      "stb-vorbis": "./js/vendor/spessasynth/stb-vorbis/index.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <!-- 加载屏 -->
+    <div id="loading-screen">
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <p id="loading-text">Loading soundfonts...</p>
+      </div>
+    </div>
+
+    <!-- 开始屏 -->
+    <div id="start-screen" class="screen hidden">
+      <h1>🎵 Pitch Listening</h1>
+      <p class="subtitle">Listen to all the notes, then pick the highest one</p>
+      <button id="btn-start" class="btn-primary">Start Training</button>
+      <button id="btn-preview" class="btn-secondary">Sound Preview</button>
+    </div>
+
+    <!-- 音源试听屏 -->
+    <div id="preview-screen" class="screen hidden">
+      <header id="preview-header">
+        <button id="btn-preview-back" class="btn-back">← Back</button>
+        <span id="preview-title">Sound Preview</span>
+      </header>
+      <div id="preview-instruments"></div>
+      <div id="preview-notes"></div>
+    </div>
+
+    <!-- 游戏屏 -->
+    <div id="game-screen" class="screen hidden">
+      <header id="game-header">
+        <span id="score-display">Score: 0</span>
+        <span id="round-display">Round 1</span>
+        <span id="instrument-display">Piano</span>
+      </header>
+
+      <div id="volume-bar">
+        <span id="volume-icon">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="100" value="80">
+      </div>
+
+      <div id="playback-area">
+        <button id="btn-play-all" class="btn-circle">▶</button>
+        <p class="hint">Tap to play all notes</p>
+      </div>
+
+      <div id="options-area"></div>
+
+      <button id="btn-replay" class="btn-secondary hidden">Replay All</button>
+    </div>
+
+    <!-- 结果屏 -->
+    <div id="result-screen" class="screen hidden">
+      <div id="result-icon"></div>
+      <p id="result-text"></p>
+      <p id="result-note"></p>
+      <div id="result-chart"></div>
+      <button id="btn-result-replay" class="btn-secondary">Replay</button>
+      <button id="btn-next" class="btn-primary">Next</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
