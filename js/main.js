@@ -1,4 +1,4 @@
-import { preloadAll, ensureResume, playSequence, playNote, getInstruments, setVolume, instrumentName, instrumentRange } from './audio.js';
+import { preloadAll, ensureResume, playSequence, playNote, getInstruments, instrumentName, instrumentRange } from './audio.js';
 import { nextRound, submitAnswer, getScore, getState } from './game.js';
 import * as ui from './ui.js';
 
@@ -20,11 +20,8 @@ async function init() {
   ui.onPreviewBack(() => ui.showStart());
   ui.onResultReplay(handleResultReplay);
 
-  const slider = document.getElementById('volume-slider');
-  setVolume(slider.value / 100);
-  slider.addEventListener('input', () => {
-    setVolume(slider.value / 100);
-  });
+  ui.initVolumePanel();
+  ui.onVolumeOpen(() => ui.showVolumePanel(true));
 }
 
 async function handleStart() {

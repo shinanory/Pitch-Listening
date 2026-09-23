@@ -38,6 +38,7 @@
       <header id="preview-header">
         <button id="btn-preview-back" class="btn-back">← Back</button>
         <span id="preview-title">Sound Preview</span>
+        <button id="btn-volume-preview" class="btn-icon" title="Volume">🔊</button>
       </header>
       <div id="preview-instruments"></div>
       <div id="preview-notes"></div>
@@ -46,15 +47,13 @@
     <!-- 游戏屏 -->
     <div id="game-screen" class="screen hidden">
       <header id="game-header">
-        <span id="score-display">Score: 0</span>
+        <div id="score-group">
+          <span id="score-display">Score: 0</span>
+          <button id="btn-volume" class="btn-icon" title="Volume">🔊</button>
+        </div>
         <span id="round-display">Round 1</span>
         <span id="instrument-display">Piano</span>
       </header>
-
-      <div id="volume-bar">
-        <span id="volume-icon">🔊</span>
-        <input type="range" id="volume-slider" min="0" max="100" value="80">
-      </div>
 
       <div id="playback-area">
         <button id="btn-play-all" class="btn-circle">▶</button>
@@ -74,6 +73,17 @@
       <div id="result-chart"></div>
       <button id="btn-result-replay" class="btn-secondary">Replay</button>
       <button id="btn-next" class="btn-primary">Next</button>
+    </div>
+
+    <!-- 音量面板（浮层） -->
+    <div id="volume-panel" class="hidden">
+      <div id="volume-panel-content">
+        <div id="volume-panel-header">
+          <span>Volume</span>
+          <button id="btn-volume-close">✕</button>
+        </div>
+        <div id="volume-sliders"></div>
+      </div>
     </div>
   </div>
 

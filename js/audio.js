@@ -4,6 +4,13 @@ const ac = new (window.AudioContext || window.webkitAudioContext)();
 const masterGain = ac.createGain();
 masterGain.connect(ac.destination);
 
+// 主音量默认 80%
+let masterVolume = 0.8;
+masterGain.gain.value = masterVolume;
+// 每个乐器的音量（0~1），通过 MIDI CC7（通道音量）实现，
+// 因为同一 sf2 文件的多个乐器共享一个合成器，无法用增益节点区分
+const instrumentVolumes = new Map();
+
 // 乐器配置，sf2 文件放在项目根目录的 sf2/ 文件夹下。
 //   file:    sf2 文件名；同一个文件的多个预设共享一个合成器，只加载一次
 //   program: 预设号（GM 程序号），bankMSB/bankLSB 仅当预设不在 bank 0 时才需要
@@ -108,8 +115,24 @@ export async function ensureResume() {
   if (ac.state === 'suspended') await ac.resume();
 }
 
+export function getVolume() {
+  return masterVolume;
+}
+
 export function setVolume(gain) {
+  masterVolume = gain;
   masterGain.gain.value = gain;
+}
+
+export function getInstrumentVolume(id) {
+  return instrumentVolumes.get(id) ?? 1;
+}
+
+// gain: 0~1，映射到 CC7 的 0~127
+export function setInstrumentVolume(id, gain) {
+  instrumentVolumes.set(id, gain);
+  const entry = loaded.get(id);
+  if (entry) entry.synth.controllerChange(entry.channel, 7, Math.round(gain * 127)); // CC7 Channel Volume
 }
 
 export function playNote(instrumentId, midiNote, duration = 1.2) {

@@ -1,4 +1,4 @@
-import { instrumentName } from './audio.js';
+import { instrumentName, getInstruments, getVolume, setVolume, getInstrumentVolume, setInstrumentVolume } from './audio.js';
 
 const $ = id => document.getElementById(id);
 
@@ -163,6 +163,46 @@ export function onReplayAll(cb)   { $('btn-replay').addEventListener('click', cb
 export function onPreview(cb)     { $('btn-preview').addEventListener('click', cb); }
 export function onPreviewBack(cb) { $('btn-preview-back').addEventListener('click', cb); }
 export function onResultReplay(cb) { $('btn-result-replay').addEventListener('click', cb); }
+
+// 音量面板：总音量 + 每个乐器的独立音量
+export function initVolumePanel() {
+  const wrap = $('volume-sliders');
+  wrap.innerHTML = '';
+  wrap.appendChild(volumeRow('Master', getVolume(), setVolume));
+  getInstruments().forEach(id => {
+    wrap.appendChild(volumeRow(instrumentName(id), getInstrumentVolume(id), v => setInstrumentVolume(id, v)));
+  });
+  $('btn-volume-close').addEventListener('click', () => showVolumePanel(false));
+  // 点击遮罩空白处关闭
+  $('volume-panel').addEventListener('click', e => {
+    if (e.target.id === 'volume-panel') showVolumePanel(false);
+  });
+}
+
+function volumeRow(label, value, onInput) {
+  const row = document.createElement('div');
+  row.className = 'volume-row';
+  const name = document.createElement('span');
+  name.className = 'volume-name';
+  name.textContent = label;
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  slider.min = 0;
+  slider.max = 100;
+  slider.value = Math.round(value * 100);
+  slider.addEventListener('input', () => onInput(slider.value / 100));
+  row.append(name, slider);
+  return row;
+}
+
+export function showVolumePanel(show) {
+  $('volume-panel').classList.toggle('hidden', !show);
+}
+
+export function onVolumeOpen(cb) {
+  $('btn-volume').addEventListener('click', cb);
+  $('btn-volume-preview').addEventListener('click', cb);
+}
 
 export function midiToName(midi) {
   const names = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
