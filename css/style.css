@@ -101,6 +101,53 @@ html, body {
   max-width: 260px;
 }
 
+/* 开始页：每题音符数量设置 */
+#note-count-setting {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+}
+
+.setting-label {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stepper-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-appearance: none;
+}
+
+.stepper-btn:active { background: var(--accent-dim); }
+
+#note-count-value {
+  min-width: 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
 /* Buttons */
 .btn-primary {
   background: var(--accent);
@@ -268,17 +315,17 @@ html, body {
   flex-shrink: 0;
 }
 
+#instrument-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 #instrument-display {
   background: var(--surface-2);
   padding: 3px 10px;
   border-radius: 20px;
   font-size: 12px;
-}
-
-#score-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .btn-icon {

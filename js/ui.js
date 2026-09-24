@@ -4,10 +4,10 @@ const $ = id => document.getElementById(id);
 
 const screens = {
   loading: $('loading-screen'),
-  start:   $('start-screen'),
+  start: $('start-screen'),
   preview: $('preview-screen'),
-  game:    $('game-screen'),
-  result:  $('result-screen'),
+  game: $('game-screen'),
+  result: $('result-screen'),
 };
 
 function showScreen(name) {
@@ -107,8 +107,8 @@ export function setResultReplayPlaying(playing) {
 }
 
 export function updateHeader(score, round, instrumentId) {
-  $('score-display').textContent   = `Score: ${score}`;
-  $('round-display').textContent   = `Round ${round}`;
+  $('score-display').textContent = `Score: ${score}/${round - 1}`;
+  $('round-display').textContent = `Round ${round}`;
   $('instrument-display').textContent = instrumentName(instrumentId);
 }
 
@@ -156,12 +156,13 @@ export function showReplayBtn(show) {
   $('btn-replay').classList.toggle('hidden', !show);
 }
 
-export function onStart(cb)       { $('btn-start').addEventListener('click', cb); }
-export function onNext(cb)        { $('btn-next').addEventListener('click', cb); }
-export function onPlayAll(cb)     { $('btn-play-all').addEventListener('click', cb); }
-export function onReplayAll(cb)   { $('btn-replay').addEventListener('click', cb); }
-export function onPreview(cb)     { $('btn-preview').addEventListener('click', cb); }
+export function onStart(cb) { $('btn-start').addEventListener('click', cb); }
+export function onNext(cb) { $('btn-next').addEventListener('click', cb); }
+export function onPlayAll(cb) { $('btn-play-all').addEventListener('click', cb); }
+export function onReplayAll(cb) { $('btn-replay').addEventListener('click', cb); }
+export function onPreview(cb) { $('btn-preview').addEventListener('click', cb); }
 export function onPreviewBack(cb) { $('btn-preview-back').addEventListener('click', cb); }
+export function onGameBack(cb)    { $('btn-game-back').addEventListener('click', cb); }
 export function onResultReplay(cb) { $('btn-result-replay').addEventListener('click', cb); }
 
 // 音量面板：总音量 + 每个乐器的独立音量
@@ -204,7 +205,17 @@ export function onVolumeOpen(cb) {
   $('btn-volume-preview').addEventListener('click', cb);
 }
 
+// 开始页"每题音符数量"步进器
+export function setNoteCountDisplay(n) {
+  $('note-count-value').textContent = n;
+}
+
+export function onNoteCountChange(cb) {
+  $('btn-notes-minus').addEventListener('click', () => cb(-1));
+  $('btn-notes-plus').addEventListener('click', () => cb(1));
+}
+
 export function midiToName(midi) {
-  const names = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   return names[midi % 12] + (Math.floor(midi / 12) - 1);
 }

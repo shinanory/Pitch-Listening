@@ -1,6 +1,19 @@
 import { instrumentRange } from './audio.js';
 
-const NOTE_COUNT = 3;
+// 每题音符数量，可在开始页调整；下限 2（至少要能比较出最高音），上限 6
+const NOTE_COUNT_MIN = 2;
+const NOTE_COUNT_MAX = 6;
+let noteCount = 3;
+
+export function getNoteCount() {
+  return noteCount;
+}
+
+// 设置每题音符数量，自动夹到 [NOTE_COUNT_MIN, NOTE_COUNT_MAX]，返回生效值
+export function setNoteCount(n) {
+  noteCount = Math.min(NOTE_COUNT_MAX, Math.max(NOTE_COUNT_MIN, n));
+  return noteCount;
+}
 
 // 同一题内所有音符的最大音高跨度（单位：半音）。
 // 例如 12 表示最低音与最高音相差不能超过一个八度。
@@ -40,6 +53,13 @@ export function getScore() {
   return { score, round };
 }
 
+// 返回开始页时清零进度，下次 Start Training 从头计分
+export function resetProgress() {
+  score = 0;
+  round = 0;
+  currentQuestion = null;
+}
+
 function generateNotes(instrumentId) {
   const { min, max } = instrumentRange(instrumentId);
   // 基准音（窗口下沿）的取值范围：保证窗口整体不超出乐器音域；
@@ -49,7 +69,7 @@ function generateNotes(instrumentId) {
   const top = Math.min(base + MAX_SPAN, max);
 
   const midis = new Set();
-  while (midis.size < NOTE_COUNT) {
+  while (midis.size < noteCount) {
     midis.add(base + Math.floor(Math.random() * (top - base + 1)));
   }
   return [...midis].map(midi => ({ midi, name: midiToName(midi) }));

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -15,6 +16,7 @@
   }
   </script>
 </head>
+
 <body>
   <div id="app">
     <!-- 加载屏 -->
@@ -29,6 +31,14 @@
     <div id="start-screen" class="screen hidden">
       <h1>🎵 Pitch Listening</h1>
       <p class="subtitle">Listen to all the notes, then pick the highest one</p>
+      <div id="note-count-setting">
+        <span class="setting-label">Notes per question</span>
+        <div class="stepper">
+          <button id="btn-notes-minus" class="stepper-btn">−</button>
+          <span id="note-count-value">3</span>
+          <button id="btn-notes-plus" class="stepper-btn">＋</button>
+        </div>
+      </div>
       <button id="btn-start" class="btn-primary">Start Training</button>
       <button id="btn-preview" class="btn-secondary">Sound Preview</button>
     </div>
@@ -47,12 +57,13 @@
     <!-- 游戏屏 -->
     <div id="game-screen" class="screen hidden">
       <header id="game-header">
-        <div id="score-group">
-          <span id="score-display">Score: 0</span>
+        <button id="btn-game-back" class="btn-back">←Back</button>
+        <span id="score-display">Score: 0/0</span>
+        <span id="round-display">Round 1</span>
+        <div id="instrument-group">
+          <span id="instrument-display">Piano</span>
           <button id="btn-volume" class="btn-icon" title="Volume">🔊</button>
         </div>
-        <span id="round-display">Round 1</span>
-        <span id="instrument-display">Piano</span>
       </header>
 
       <div id="playback-area">
@@ -89,4 +100,5 @@
 
   <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

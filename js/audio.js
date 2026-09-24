@@ -135,14 +135,14 @@ export function setInstrumentVolume(id, gain) {
   if (entry) entry.synth.controllerChange(entry.channel, 7, Math.round(gain * 127)); // CC7 Channel Volume
 }
 
-export function playNote(instrumentId, midiNote, duration = 1.2) {
+export function playNote(instrumentId, midiNote, duration = 0.8) {
   const entry = loaded.get(instrumentId);
   if (!entry) return;
   entry.synth.noteOn(entry.channel, midiNote, VELOCITY);
   setTimeout(() => entry.synth.noteOff(entry.channel, midiNote), duration * 1000);
 }
 
-export function playSequence(instrumentId, notes, gap = 1.4, onIndexChange) {
+export function playSequence(instrumentId, notes, gap = 0.9, onIndexChange) {
   return new Promise(resolve => {
     notes.forEach((midi, i) => {
       setTimeout(() => {

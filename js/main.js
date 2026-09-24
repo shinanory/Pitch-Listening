@@ -1,5 +1,5 @@
 import { preloadAll, ensureResume, playSequence, playNote, getInstruments, instrumentName, instrumentRange } from './audio.js';
-import { nextRound, submitAnswer, getScore, getState } from './game.js';
+import { nextRound, submitAnswer, getScore, getState, getNoteCount, setNoteCount, resetProgress } from './game.js';
 import * as ui from './ui.js';
 
 let currentInstrumentId = null;
@@ -18,15 +18,28 @@ async function init() {
   ui.onReplayAll(handlePlayAll);
   ui.onPreview(handlePreview);
   ui.onPreviewBack(() => ui.showStart());
+  ui.onGameBack(handleGameBack);
   ui.onResultReplay(handleResultReplay);
 
   ui.initVolumePanel();
   ui.onVolumeOpen(() => ui.showVolumePanel(true));
+
+  ui.setNoteCountDisplay(getNoteCount());
+  ui.onNoteCountChange(delta => {
+    ui.setNoteCountDisplay(setNoteCount(getNoteCount() + delta));
+  });
 }
 
 async function handleStart() {
   await ensureResume();
   startNewRound();
+}
+
+// 返回开始页并清零进度；播放中忽略，避免已排定的音符在别的页面继续响
+function handleGameBack() {
+  if (isPlaying) return;
+  resetProgress();
+  ui.showStart();
 }
 
 async function handleNext() {
@@ -58,7 +71,7 @@ async function handlePlayAll() {
   await playSequence(
     currentInstrumentId,
     question.notes.map(n => n.midi),
-    1.4,
+    0.9,
     (i) => ui.setPlayingIndicator(i)
   );
 
@@ -91,7 +104,7 @@ async function handleResultReplay() {
   ui.setResultReplayPlaying(true);
 
   const question = getState().currentQuestion;
-  await playSequence(currentInstrumentId, question.notes.map(n => n.midi), 1.4);
+  await playSequence(currentInstrumentId, question.notes.map(n => n.midi));
 
   ui.setResultReplayPlaying(false);
   isResultPlaying = false;
