@@ -1,5 +1,5 @@
 import { preloadAll, ensureResume, playSequence, playNote, getInstruments, instrumentName, instrumentRange } from './audio.js';
-import { nextRound, submitAnswer, getScore, getState, getNoteCount, setNoteCount, resetProgress } from './game.js';
+import { nextRound, submitAnswer, submitTrend, getScore, getState, getNoteCount, setNoteCount, resetProgress, setMode } from './game.js';
 import * as ui from './ui.js';
 
 let currentInstrumentId = null;
@@ -15,7 +15,6 @@ async function init() {
   ui.onStart(handleStart);
   ui.onNext(handleNext);
   ui.onPlayAll(handlePlayAll);
-  ui.onReplayAll(handlePlayAll);
   ui.onPreview(handlePreview);
   ui.onPreviewBack(() => ui.showStart());
   ui.onGameBack(handleGameBack);
@@ -28,6 +27,12 @@ async function init() {
   ui.onNoteCountChange(delta => {
     ui.setNoteCountDisplay(setNoteCount(getNoteCount() + delta));
   });
+  ui.onModeChange(setMode);
+
+  ui.onTrendUp(() => handleTrendInput('up'));
+  ui.onTrendDown(() => handleTrendInput('down'));
+  ui.onTrendBack(handleTrendBack);
+  ui.onTrendSubmit(handleTrendSubmit);
 }
 
 async function handleStart() {
@@ -55,10 +60,50 @@ function startNewRound() {
   const { score, round } = getScore();
   ui.updateHeader(score, round, currentInstrumentId);
   ui.showGame();
-  ui.showReplayBtn(false);
   ui.setPlayAllPlaying(false);
 
-  ui.renderOptions(question.notes, handleChoose);
+  if (question.mode === 'trend') {
+    trendInputs = [];
+    trendTotal = question.notes.length - 1;
+    trendLocked = false;
+    ui.showTrendArea(true);
+    refreshTrend();
+  } else {
+    ui.showTrendArea(false);
+    ui.renderOptions(question.notes, handleChoose);
+  }
+}
+
+// 走势题输入状态
+let trendInputs = [];
+let trendTotal = 0;
+let trendLocked = false;
+
+function refreshTrend() {
+  ui.setTrendState(trendInputs, trendTotal, trendLocked);
+}
+
+function handleTrendInput(dir) {
+  if (trendInputs.length >= trendTotal) return;
+  trendInputs.push(dir);
+  refreshTrend();
+}
+
+function handleTrendBack() {
+  trendInputs.pop();
+  refreshTrend();
+}
+
+async function handleTrendSubmit() {
+  if (trendLocked || trendInputs.length < trendTotal) return;
+  trendLocked = true;
+  refreshTrend();
+
+  const question = getState().currentQuestion;
+  const result = submitTrend(trendInputs);
+
+  await new Promise(r => setTimeout(r, 300));
+  ui.showResult(result.correct, result, question.notes);
 }
 
 async function handlePlayAll() {
@@ -66,6 +111,8 @@ async function handlePlayAll() {
   isPlaying = true;
   ui.setOptionsDisabled(true);
   ui.setPlayAllPlaying(true);
+  trendLocked = true;
+  refreshTrend();
 
   const question = getState().currentQuestion;
   await playSequence(
@@ -77,14 +124,14 @@ async function handlePlayAll() {
 
   ui.setPlayAllPlaying(false);
   ui.setOptionsDisabled(false);
-  ui.showReplayBtn(true);
+  trendLocked = false;
+  refreshTrend();
   isPlaying = false;
 }
 
 async function handleChoose(index) {
   if (isPlaying) return;
   ui.setOptionsDisabled(true);
-  ui.showReplayBtn(false);
 
   const question = getState().currentQuestion;
   const result = submitAnswer(index);

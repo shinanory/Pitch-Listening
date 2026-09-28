@@ -1,7 +1,18 @@
 import { instrumentRange } from './audio.js';
 
-// 每题音符数量，可在开始页调整；下限 2（至少要能比较出最高音），上限 6
-const NOTE_COUNT_MIN = 2;
+// 题目类型，开始页下拉框设置：'highest' = 选出最高音；'trend' = 判断音高走势
+let mode = 'highest';
+
+export function getMode() {
+  return mode;
+}
+
+export function setMode(m) {
+  mode = m;
+}
+
+// 每题音符数量，可在开始页调整；下限 3，上限 6
+const NOTE_COUNT_MIN = 3;
 const NOTE_COUNT_MAX = 6;
 let noteCount = 3;
 
@@ -34,7 +45,7 @@ export function nextRound(instrumentId) {
   const notes = generateNotes(instrumentId);
   const maxMidi = Math.max(...notes.map(n => n.midi));
   const highestIndex = notes.findIndex(n => n.midi === maxMidi);
-  currentQuestion = { notes, highestIndex, instrumentId };
+  currentQuestion = { notes, highestIndex, instrumentId, mode };
   return currentQuestion;
 }
 
@@ -51,6 +62,19 @@ export function submitAnswer(index) {
 
 export function getScore() {
   return { score, round };
+}
+
+// 走势题判分：inputs 为 'up'/'down' 序列，与题目相邻音符的音高变化逐一比对
+// （音符互不相同，所以不存在"持平"）
+export function submitTrend(inputs) {
+  const notes = currentQuestion.notes;
+  const expected = [];
+  for (let i = 1; i < notes.length; i++) {
+    expected.push(notes[i].midi > notes[i - 1].midi ? 'up' : 'down');
+  }
+  const correct = inputs.length === expected.length && inputs.every((v, i) => v === expected[i]);
+  if (correct) score++;
+  return { correct, expected, inputs: [...inputs] };
 }
 
 // 返回开始页时清零进度，下次 Start Training 从头计分

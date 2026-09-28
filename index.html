@@ -39,6 +39,13 @@
           <button id="btn-notes-plus" class="stepper-btn">＋</button>
         </div>
       </div>
+      <div id="mode-setting">
+        <span class="setting-label">Question type</span>
+        <select id="mode-select">
+          <option value="highest">Highest Note</option>
+          <option value="trend">Trend</option>
+        </select>
+      </div>
       <button id="btn-start" class="btn-primary">Start Training</button>
       <button id="btn-preview" class="btn-secondary">Sound Preview</button>
     </div>
@@ -73,7 +80,18 @@
 
       <div id="options-area"></div>
 
-      <button id="btn-replay" class="btn-secondary hidden">Replay All</button>
+      <!-- 走势判断输入区 -->
+      <div id="trend-area" class="hidden">
+        <p class="hint" id="trend-hint"></p>
+        <div id="trend-display"></div>
+        <div id="trend-keys">
+          <button id="btn-trend-up" class="trend-btn">↑</button>
+          <button id="btn-trend-down" class="trend-btn">↓</button>
+          <button id="btn-trend-back" class="trend-btn">⌫</button>
+        </div>
+        <button id="btn-trend-submit" class="btn-primary" disabled>Submit</button>
+      </div>
+
     </div>
 
     <!-- 结果屏 -->

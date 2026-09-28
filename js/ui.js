@@ -62,9 +62,17 @@ export function showResult(correct, result, notes) {
   screen.className = 'screen ' + (correct ? 'correct-bg' : 'wrong-bg');
   $('result-icon').textContent = correct ? '✅' : '❌';
   $('result-text').textContent = correct ? 'Correct!' : 'Wrong';
-  $('result-note').textContent = correct
-    ? `Highest note is ${midiToName(result.highestMidi)}`
-    : `You picked ${midiToName(result.chosenMidi)}, highest note is ${midiToName(result.highestMidi)}`;
+  if (result.expected) {
+    // 走势题：显示正确走势与玩家输入
+    const fmt = arr => arr.map(d => d === 'up' ? '↑' : '↓').join(' ');
+    $('result-note').textContent = correct
+      ? `Trend: ${fmt(result.expected)}`
+      : `Answer: ${fmt(result.expected)}    Yours: ${fmt(result.inputs)}`;
+  } else {
+    $('result-note').textContent = correct
+      ? `Highest note is ${midiToName(result.highestMidi)}`
+      : `You picked ${midiToName(result.chosenMidi)}, highest note is ${midiToName(result.highestMidi)}`;
+  }
   renderResultChart(notes, result.highestIndex, result.chosenIndex);
   setResultReplayPlaying(false);
   showScreen('result');
@@ -152,14 +160,9 @@ export function setPlayAllPlaying(playing) {
   btn.textContent = playing ? '…' : '▶';
 }
 
-export function showReplayBtn(show) {
-  $('btn-replay').classList.toggle('hidden', !show);
-}
-
 export function onStart(cb) { $('btn-start').addEventListener('click', cb); }
 export function onNext(cb) { $('btn-next').addEventListener('click', cb); }
 export function onPlayAll(cb) { $('btn-play-all').addEventListener('click', cb); }
-export function onReplayAll(cb) { $('btn-replay').addEventListener('click', cb); }
 export function onPreview(cb) { $('btn-preview').addEventListener('click', cb); }
 export function onPreviewBack(cb) { $('btn-preview-back').addEventListener('click', cb); }
 export function onGameBack(cb)    { $('btn-game-back').addEventListener('click', cb); }
@@ -214,6 +217,36 @@ export function onNoteCountChange(cb) {
   $('btn-notes-minus').addEventListener('click', () => cb(-1));
   $('btn-notes-plus').addEventListener('click', () => cb(1));
 }
+
+export function onModeChange(cb) {
+  $('mode-select').addEventListener('change', e => cb(e.target.value));
+}
+
+// 走势题：切换选项区 / 走势输入区
+export function showTrendArea(show) {
+  $('trend-area').classList.toggle('hidden', !show);
+  $('options-area').classList.toggle('hidden', show);
+}
+
+// 渲染走势输入状态：inputs 已输入的 'up'/'down' 序列，total 需要输入的个数，
+// locked 为 true 时（播放中）仅禁用提交按钮，三个输入按钮保持可用
+export function setTrendState(inputs, total, locked) {
+  const disp = $('trend-display');
+  disp.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const chip = document.createElement('span');
+    chip.className = 'trend-chip' + (i < inputs.length ? ' filled' : '');
+    chip.textContent = i < inputs.length ? (inputs[i] === 'up' ? '↑' : '↓') : '?';
+    disp.appendChild(chip);
+  }
+  $('trend-hint').textContent = `Listen, then enter the ${total} pitch change${total > 1 ? 's' : ''}`;
+  $('btn-trend-submit').disabled = locked || inputs.length < total;
+}
+
+export function onTrendUp(cb)     { $('btn-trend-up').addEventListener('click', cb); }
+export function onTrendDown(cb)   { $('btn-trend-down').addEventListener('click', cb); }
+export function onTrendBack(cb)   { $('btn-trend-back').addEventListener('click', cb); }
+export function onTrendSubmit(cb) { $('btn-trend-submit').addEventListener('click', cb); }
 
 export function midiToName(midi) {
   const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
