@@ -12,31 +12,32 @@ masterGain.gain.value = masterVolume;
 const instrumentVolumes = new Map();
 
 // 乐器配置，sf2 文件放在项目根目录的 sf2/ 文件夹下。
-//   file:    sf2 文件名；同一个文件的多个预设共享一个合成器，只加载一次
-//   program: 预设号（GM 程序号），bankMSB/bankLSB 仅当预设不在 bank 0 时才需要
-//   name:    界面显示名
+//   file:     sf2 文件名；同一个文件的多个预设共享一个合成器，只加载一次
+//   program:  预设号（GM 程序号），bankMSB/bankLSB 仅当预设不在 bank 0 时才需要
+//   name:     界面显示名
+//   velocity: 演奏力度（0~127，默认 100）；采样本身偏轻的乐器可单独调高
 const INSTRUMENTS = {
-  Key:        { file: 'Grand_Piano_127_Keys.sf2',        program: 0,  name: 'Key' },
-  Bass:       { file: 'JazzBass.sf2',                    program: 0,  name: 'Bass' },
-  Flute:      { file: '142-Flute.sf2',                   program: 73, name: 'Flute' },
-  Oboe:       { file: '142-Oboe Stereo.sf2',             program: 68, name: 'Oboe' },
-  FrenchHorn: { file: '060_Florestan_French_Horns.sf2',  program: 60, name: 'French Horn' },
-  Violin:     { file: '040_Florestan_String_Quartet.sf2', program: 40, name: 'Violin' },
-  Viola:      { file: '040_Florestan_String_Quartet.sf2', program: 41, name: 'Viola' },
-  Cello:      { file: '040_Florestan_String_Quartet.sf2', program: 42, name: 'Cello' },
-  Contrabass: { file: '040_Florestan_String_Quartet.sf2', program: 43, name: 'Contrabass' },
+  Key: { file: 'Grand_Piano_127_Keys.sf2', program: 0, name: 'Key', velocity: 60 },
+  Bass: { file: 'JazzBass.sf2', program: 0, name: 'Bass', velocity: 127 },
+  Flute: { file: '142-Flute.sf2', program: 73, name: 'Flute', velocity: 80  },
+  Oboe: { file: '142-Oboe Stereo.sf2', program: 68, name: 'Oboe', velocity: 80 },
+  FrenchHorn: { file: '060_Florestan_French_Horns.sf2', program: 60, name: 'French Horn', velocity: 127 },
+  Violin: { file: '040_Florestan_String_Quartet.sf2', program: 40, name: 'Violin' },
+  Viola: { file: '040_Florestan_String_Quartet.sf2', program: 41, name: 'Viola' },
+  Cello: { file: '040_Florestan_String_Quartet.sf2', program: 42, name: 'Cello' },
+  Contrabass: { file: '040_Florestan_String_Quartet.sf2', program: 43, name: 'Contrabass', velocity: 115 },
 };
 
 // 每件乐器的音域范围（MIDI 音符号），用于出题与试听
 const INSTRUMENT_RANGES = {
-  Key:        { min: 45, max: 81 },   // A2 – A5
-  Bass:       { min: 21, max: 57 },   // A0 – A3
-  Flute:      { min: 60, max: 89 },   // C4 – F6
-  Oboe:       { min: 50, max: 89 },   // D3 – F6
+  Key: { min: 45, max: 81 },   // A2 – A5
+  Bass: { min: 21, max: 57 },   // A0 – A3
+  Flute: { min: 60, max: 89 },   // C4 – F6
+  Oboe: { min: 50, max: 89 },   // D3 – F6
   FrenchHorn: { min: 47, max: 77 },   // B2 – F5
-  Violin:     { min: 55, max: 91 },   // G3 – G6
-  Viola:      { min: 48, max: 93 },  // C3 – A6
-  Cello:      { min: 36, max: 81 },   // C2 – A5
+  Violin: { min: 55, max: 91 },   // G3 – G6
+  Viola: { min: 48, max: 93 },  // C3 – A6
+  Cello: { min: 36, max: 81 },   // C2 – A5
   Contrabass: { min: 40, max: 64 },   // E2 – E4
 };
 
@@ -138,7 +139,8 @@ export function setInstrumentVolume(id, gain) {
 export function playNote(instrumentId, midiNote, duration = 0.8) {
   const entry = loaded.get(instrumentId);
   if (!entry) return;
-  entry.synth.noteOn(entry.channel, midiNote, VELOCITY);
+  const velocity = INSTRUMENTS[instrumentId]?.velocity ?? VELOCITY;
+  entry.synth.noteOn(entry.channel, midiNote, velocity);
   setTimeout(() => entry.synth.noteOff(entry.channel, midiNote), duration * 1000);
 }
 
