@@ -234,7 +234,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 4px;
+  padding: 12px 56px 12px 4px; /* 右侧留出齿轮按钮位置 */
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
 }
@@ -321,17 +321,11 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 4px 12px;
+  padding: 16px 56px 12px 4px; /* 右侧留出齿轮按钮位置 */
   font-size: 13px;
   color: var(--text-muted);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
-}
-
-#instrument-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 #instrument-display {
@@ -341,24 +335,33 @@ html, body {
   font-size: 12px;
 }
 
-.btn-icon {
-  background: none;
-  border: none;
-  font-size: 16px;
+/* 全局设置按钮：固定在视口右上角，所有界面共用 */
+#btn-settings {
+  position: fixed;
+  top: 10px;
+  right: 12px;
+  z-index: 40;
+  background: var(--surface-2);
+  border: 1px solid rgba(108,143,255,0.35);
+  border-radius: 50%;
+  color: var(--text-muted);
+  font-size: 20px;
   line-height: 1;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  padding: 4px;
+  padding: 0;
+  box-shadow: 0 0 8px rgba(108,143,255,0.45), 0 0 16px rgba(108,143,255,0.2);
   -webkit-appearance: none;
 }
 
-.btn-icon:active { transform: scale(0.9); }
+#btn-settings:active { transform: scale(0.9); }
 
-#preview-header .btn-icon {
-  margin-left: auto;
-}
-
-/* 音量面板（浮层） */
-#volume-panel {
+/* 设置面板（浮层） */
+#settings-panel {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.55);
@@ -369,7 +372,7 @@ html, body {
   padding: 20px;
 }
 
-#volume-panel-content {
+#settings-panel-content {
   width: 100%;
   max-width: 360px;
   max-height: 80dvh;
@@ -378,18 +381,101 @@ html, body {
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-lg);
   padding: 16px 20px 20px;
+  /* 滚动条与整体深色风格统一：细、圆角、accent 配色 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-dim) transparent;
 }
 
-#volume-panel-header {
+#settings-panel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+#settings-panel-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#settings-panel-content::-webkit-scrollbar-thumb {
+  background: var(--accent-dim);
+  border-radius: 3px;
+}
+
+#settings-panel-content::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+#settings-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 12px;
 }
 
-#btn-volume-close {
+/* 设置面板内的分区副标题 */
+.settings-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 6px;
+}
+
+/* 第二个及之后的分区与上方内容拉开距离 */
+#volume-sliders + .settings-subtitle {
+  margin-top: 16px;
+}
+
+/* 滑动开关：左关右开 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch .track {
+  position: absolute;
+  inset: 0;
+  background: var(--surface-2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.switch .track::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.switch input:checked + .track {
+  background: var(--accent);
+}
+
+.switch input:checked + .track::before {
+  transform: translateX(20px);
+  background: #fff;
+}
+
+#btn-settings-close {
   background: none;
   border: none;
   color: var(--text-muted);

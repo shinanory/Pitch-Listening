@@ -1,4 +1,4 @@
-import { instrumentName, getInstruments, getVolume, setVolume, getInstrumentVolume, setInstrumentVolume } from './audio.js';
+import { instrumentName, getInstruments, getVolume, setVolume, getInstrumentVolume, setInstrumentVolume, getLegato, setLegato } from './audio.js';
 
 const $ = id => document.getElementById(id);
 
@@ -14,6 +14,8 @@ function showScreen(name) {
   Object.entries(screens).forEach(([key, el]) => {
     el.classList.toggle('hidden', key !== name);
   });
+  // 齿轮设置按钮在除加载屏外的所有界面右上角显示
+  $('btn-settings').classList.toggle('hidden', name === 'loading');
 }
 
 export function showLoading(text) {
@@ -168,18 +170,21 @@ export function onPreviewBack(cb) { $('btn-preview-back').addEventListener('clic
 export function onGameBack(cb)    { $('btn-game-back').addEventListener('click', cb); }
 export function onResultReplay(cb) { $('btn-result-replay').addEventListener('click', cb); }
 
-// 音量面板：总音量 + 每个乐器的独立音量
-export function initVolumePanel() {
+// 设置面板：总音量 + 每个乐器的独立音量 + 连奏开关
+export function initSettingsPanel() {
   const wrap = $('volume-sliders');
   wrap.innerHTML = '';
   wrap.appendChild(volumeRow('Master', getVolume(), setVolume));
   getInstruments().forEach(id => {
     wrap.appendChild(volumeRow(instrumentName(id), getInstrumentVolume(id), v => setInstrumentVolume(id, v)));
   });
-  $('btn-volume-close').addEventListener('click', () => showVolumePanel(false));
+  const legato = $('legato-toggle');
+  legato.checked = getLegato();
+  legato.addEventListener('change', () => setLegato(legato.checked));
+  $('btn-settings-close').addEventListener('click', () => showSettingsPanel(false));
   // 点击遮罩空白处关闭
-  $('volume-panel').addEventListener('click', e => {
-    if (e.target.id === 'volume-panel') showVolumePanel(false);
+  $('settings-panel').addEventListener('click', e => {
+    if (e.target.id === 'settings-panel') showSettingsPanel(false);
   });
 }
 
@@ -199,13 +204,12 @@ function volumeRow(label, value, onInput) {
   return row;
 }
 
-export function showVolumePanel(show) {
-  $('volume-panel').classList.toggle('hidden', !show);
+export function showSettingsPanel(show) {
+  $('settings-panel').classList.toggle('hidden', !show);
 }
 
-export function onVolumeOpen(cb) {
-  $('btn-volume').addEventListener('click', cb);
-  $('btn-volume-preview').addEventListener('click', cb);
+export function onSettingsOpen(cb) {
+  $('btn-settings').addEventListener('click', cb);
 }
 
 // 开始页"每题音符数量"步进器

@@ -20,7 +20,7 @@ const INSTRUMENTS = {
   Key: { file: 'Grand_Piano_127_Keys.sf2', program: 0, name: 'Key', velocity: 60 },
   Bass: { file: 'JazzBass.sf2', program: 0, name: 'Bass', velocity: 127 },
   Flute: { file: '142-Flute.sf2', program: 73, name: 'Flute', velocity: 80  },
-  Oboe: { file: '142-Oboe Stereo.sf2', program: 68, name: 'Oboe', velocity: 80 },
+  Oboe: { file: '142-Oboe Stereo.sf2', program: 68, name: 'Oboe', velocity: 90 },
   FrenchHorn: { file: '060_Florestan_French_Horns.sf2', program: 60, name: 'French Horn', velocity: 127 },
   Violin: { file: '040_Florestan_String_Quartet.sf2', program: 40, name: 'Violin' },
   Viola: { file: '040_Florestan_String_Quartet.sf2', program: 41, name: 'Viola' },
@@ -46,6 +46,19 @@ const SF2_DIR = new URL('../sf2/', import.meta.url);
 const WORKLET_URL = new URL('./vendor/spessasynth/spessasynth_processor.min.js', import.meta.url).href;
 
 const VELOCITY = 100;
+
+// 连奏开关（默认关）：开启后音符之间取消间隔、完全相连。
+// Key（钢琴）和 Bass 保持原样不参与连奏。
+let legatoEnabled = false;
+const LEGATO_EXCLUDED = new Set(['Key', 'Bass']);
+
+export function getLegato() {
+  return legatoEnabled;
+}
+
+export function setLegato(on) {
+  legatoEnabled = on;
+}
 
 const ids = Object.keys(INSTRUMENTS);
 
@@ -145,10 +158,12 @@ export function playNote(instrumentId, midiNote, duration = 0.8) {
 }
 
 export function playSequence(instrumentId, notes, gap = 0.9, onIndexChange) {
+  // 连奏时音符时值延长到下一个音符响起（略加重叠，避免定时器误差留出缝隙）
+  const legato = legatoEnabled && !LEGATO_EXCLUDED.has(instrumentId);
   return new Promise(resolve => {
     notes.forEach((midi, i) => {
       setTimeout(() => {
-        playNote(instrumentId, midi);
+        playNote(instrumentId, midi, i < notes.length - 1 && legato ? gap + 0.05 : undefined);
         onIndexChange?.(i);
       }, i * gap * 1000);
     });

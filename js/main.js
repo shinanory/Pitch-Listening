@@ -20,8 +20,8 @@ async function init() {
   ui.onGameBack(handleGameBack);
   ui.onResultReplay(handleResultReplay);
 
-  ui.initVolumePanel();
-  ui.onVolumeOpen(() => ui.showVolumePanel(true));
+  ui.initSettingsPanel();
+  ui.onSettingsOpen(() => ui.showSettingsPanel(true));
 
   ui.setNoteCountDisplay(getNoteCount());
   ui.onNoteCountChange(delta => {

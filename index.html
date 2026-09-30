@@ -19,6 +19,9 @@
 
 <body>
   <div id="app">
+    <!-- 全局设置按钮（右上角齿轮，加载屏隐藏） -->
+    <button id="btn-settings" class="hidden" title="Settings">⚙</button>
+
     <!-- 加载屏 -->
     <div id="loading-screen">
       <div class="loading-content">
@@ -55,7 +58,6 @@
       <header id="preview-header">
         <button id="btn-preview-back" class="btn-back">← Back</button>
         <span id="preview-title">Sound Preview</span>
-        <button id="btn-volume-preview" class="btn-icon" title="Volume">🔊</button>
       </header>
       <div id="preview-instruments"></div>
       <div id="preview-notes"></div>
@@ -67,10 +69,7 @@
         <button id="btn-game-back" class="btn-back">←Back</button>
         <span id="score-display">Score: 0/0</span>
         <span id="round-display">Round 1</span>
-        <div id="instrument-group">
-          <span id="instrument-display">Piano</span>
-          <button id="btn-volume" class="btn-icon" title="Volume">🔊</button>
-        </div>
+        <span id="instrument-display">Piano</span>
       </header>
 
       <div id="playback-area">
@@ -104,14 +103,23 @@
       <button id="btn-next" class="btn-primary">Next</button>
     </div>
 
-    <!-- 音量面板（浮层） -->
-    <div id="volume-panel" class="hidden">
-      <div id="volume-panel-content">
-        <div id="volume-panel-header">
-          <span>Volume</span>
-          <button id="btn-volume-close">✕</button>
+    <!-- 设置面板（浮层） -->
+    <div id="settings-panel" class="hidden">
+      <div id="settings-panel-content">
+        <div id="settings-panel-header">
+          <span>Settings</span>
+          <button id="btn-settings-close">✕</button>
         </div>
+        <div class="settings-subtitle">Volume</div>
         <div id="volume-sliders"></div>
+        <div class="settings-subtitle">Playback</div>
+        <div class="volume-row">
+          <span class="volume-name">Legato</span>
+          <label class="switch">
+            <input type="checkbox" id="legato-toggle">
+            <span class="track"></span>
+          </label>
+        </div>
       </div>
     </div>
   </div>
